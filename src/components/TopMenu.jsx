@@ -13,6 +13,7 @@ const TopMenu = ({ setCurrentSvg, currentSvg, selectedSvg, setSelectedSvg }) => 
   const fileInputRef = useRef(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const history = useSelector((state) => state.importSvg.history);
+  
 
   const handleFileUpload = (event) => {
     console.log("File upload event triggered");
@@ -101,7 +102,7 @@ const TopMenu = ({ setCurrentSvg, currentSvg, selectedSvg, setSelectedSvg }) => 
             <Button className="text-white hover:text-gray-100" color="inherit" startIcon={<Redo />} onClick={handleRedo} disabled={history.length <= 1}>Redo</Button>
           </Tooltip>
           <Tooltip title="Delete">
-            <Button className="text-white hover:text-gray-100" color="inherit" startIcon={<Delete />} onClick={handleDeleteSvg}>Delete</Button>
+            <Button className="text-white hover:text-gray-100" color="inherit" startIcon={<Delete />} onClick={handleDeleteSvg}disabled={svgs.length <= 0}>Delete</Button>
           </Tooltip>
           {/* onClick={() => dispatch(undo())}  onClick={() => dispatch(redo())} */}
         </Box>
