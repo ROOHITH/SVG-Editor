@@ -1,0 +1,195 @@
+// SVGCanvas.js
+import React from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { Paper } from '@mui/material';
+import SVGContent from './SVGContent';
+import { Controlled as CodeMirror } from 'react-codemirror2';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { updateSvgContent } from '../features/importSvg/importSvgSlice'; // Import your action
+
+// Import the necessary CodeMirror CSS
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/material.css';
+import 'codemirror/mode/xml/xml';
+
+
+function SVGCanvas({ selectedTool, setSelectedTool, selectedSvg, setSelectedSvg, setCurrentSvg, currentSvg, }) {
+  console.log("this component is called")
+  const dispatch = useDispatch();
+  console.log("svg id selected or imported")
+  console.log(currentSvg)
+  // State to manage the content of the CodeMirror editor
+  const [editorContent, setEditorContent] = useState(svgContent);
+  // Get the SVG content directly from the Redux store
+  const svgContent = useSelector((state) => {
+    // Find the SVG object by its ID
+
+    const svg = state.importSvg.svgs.find((svg) =>
+
+      svg.id === currentSvg
+    );
+    return svg ? svg.content : ''; // Return the content if found, otherwise an empty string
+  });
+  console.log("svg content " + svgContent);
+
+
+  // Update the content of the CodeMirror editor when the SVG content changes
+  useEffect(() => {
+    setEditorContent(svgContent);
+  }, [svgContent]);
+
+  // Function to handle code change in the CodeMirror editor
+  const handleCodeChange = (editor, data, value) => {
+    // Update the content of the CodeMirror editor
+    setEditorContent(value);
+    alert()
+    // Dispatch action to update SVG content in Redux store
+    dispatch(updateSvgContent({ svgId: currentSvg, newContent: value }));
+  };
+
+  return (
+    <Paper elevation={3} className="SVGCanvas flex flex-1 m-3" id="svg-canvas">
+      <div className="code-column flex-1 ">
+        <CodeMirror
+          value={editorContent}
+          onBeforeChange={(editor, data, value) => handleCodeChange(editor, data, value)}
+          options={{
+            mode: 'xml',
+            theme: 'material',
+            lineNumbers: true
+          }}
+
+        />
+      </div>
+      <div className="preview-column flex-1 bg-slate-300">
+        <SVGContent selectedSvg={selectedSvg} setSelectedSvg={setSelectedSvg} selectedTool={selectedTool} setSelectedTool={setSelectedTool} />
+      </div>
+
+
+    </Paper>
+  );
+}
+
+export default SVGCanvas;
+ // Function to update SVG content
+  const updateSvgContentFunc = (savedSvg, svgId) => {
+    const { x, y } = savedSvg.position; // Use new position if available
+    const { width, height } = savedSvg.size; // Use new size if available
+
+    // Replace the <svg> tag with updated attributes
+    let updatedSvgContentData = savedSvg.content;
+    if (x) updatedSvgContentData = updatedSvgContentData.replace(/x="[^"]*"/, `x="${x}"`);
+    if (y) updatedSvgContentData = updatedSvgContentData.replace(/y="[^"]*"/, `y="${y}"`);
+    if (width) updatedSvgContentData = updatedSvgContentData.replace(/width="[^"]*"/, `width="${width}"`);
+    if (height) updatedSvgContentData = updatedSvgContentData.replace(/height="[^"]*"/, `height="${height}"`);
+    //updatedSvgContentData = updatedSvgContentData.replace(/viewBox="[^"]*"/, `viewBox="${x||0} ${y||0} ${width||124} ${height||124 }"`);
+    // setEditorContent(updatedSvgContentData);
+    dispatch(updateSvgContent({ svgId, newContent: updatedSvgContentData }));
+  };
+
+  
+  // Function to update SVG content
+  const updateSvgContentFunc = (savedSvg, svgId) => {
+    const { x, y } = savedSvg.position; // Use new position if available
+    const { width, height } = savedSvg.size; // Use new size if available
+    const rotation = savedSvg.rotation;
+    // Regular expression to match the opening <svg> tag with its attributes
+    const openingSvgTagRegex = /<svg\s([^>]*)>/;
+
+    // Find the opening <svg> tag
+    const openingSvgTagMatch = savedSvg.content.match(openingSvgTagRegex);
+
+    // If the opening <svg> tag is found
+    if (openingSvgTagMatch) {
+      // Get the attributes from the opening <svg> tag
+      const attributes = openingSvgTagMatch[1];
+
+      // Replace specific attributes if they exist
+      let updatedSvgContentData = savedSvg.content;
+      // if (x) {
+      //     updatedSvgContentData = updatedSvgContentData.replace(/x="[^"]*"/, `x="${x}"`);
+      // }
+      // if (y) {
+      //   updatedSvgContentData = updatedSvgContentData.replace(/y="[^"]*"/, `y="${y}"`);
+      // }
+      if (width) {
+
+        updatedSvgContentData = updatedSvgContentData.replace(/width="[^"]*"/, `width="${width}"`);
+      }
+      if (height) {
+        updatedSvgContentData = updatedSvgContentData.replace(/height="[^"]*"/, `height="${height}"`);
+
+      }
+      updatedSvgContentData = updatedSvgContentData.replace(/viewBox="[^"]*"/, `viewBox="0 0 124 124"`);
+      // Update transform attribute for translation and scaling
+      let transform = `translate(${x},${y}) scale(${width / 100},${height / 100})`;
+
+      // Add rotation to transform if available
+      if (rotation) {
+        transform += ` rotate(${rotation})`;
+      }
+
+      updatedSvgContentData = updatedSvgContentData.replace(/transform="[^"]*"/, `transform="${transform}"`);
+      // Dispatch the updated SVG content
+      dispatch(updateSvgContent({ svgId, newContent: updatedSvgContentData }));
+    } else {
+      // Handle case where opening <svg> tag is not found
+      console.error("Opening <svg> tag not found in SVG content.");
+    }
+  };
+
+
+   // Function to update SVG content
+  const updateSvgContentFunc = (savedSvg, svgId) => {
+   
+    const { x, y } = savedSvg.position || { x: 1, y: 1 };// Use new position if available
+    const { width, height } = savedSvg.size || { width: 300, height: 300 }; // Use new size if available
+    const rotation = savedSvg.rotation || 0; // Ensure rotation is defined
+    const viewBox=savedSvg.viewBox
+    console.log("each time rotation")
+    console.log(rotation);
+    // Regular expression to match the opening <svg> tag with its attributes
+    const openingSvgTagRegex = /<svg\s([^>]*)>/;
+
+    // Find the opening <svg> tag
+    const openingSvgTagMatch = savedSvg.content.match(openingSvgTagRegex);
+
+    // If the opening <svg> tag is found
+    if (openingSvgTagMatch) {
+      // Get the attributes from the opening <svg> tag
+      const attributes = openingSvgTagMatch[1];
+
+      // Replace specific attributes if they exist
+      let updatedSvgContentData = savedSvg.content;
+
+      if (width) {
+        updatedSvgContentData = updatedSvgContentData.replace(/width="[^"]*"/, `width="${width}"`);
+      }
+      if (height) {
+        updatedSvgContentData = updatedSvgContentData.replace(/height="[^"]*"/, `height="${height}"`);
+      }
+
+      // Update viewBox attribute
+      updatedSvgContentData = updatedSvgContentData.replace(/viewBox="[^"]*"/, `viewBox="${viewBox}"`);
+
+      // Update transform attribute for translation, scaling, and rotation
+      let transform = `translate(${x},${y}) scale(${width / 100},${height / 100})`;
+
+      // Add rotation to transform if available
+
+      if (rotation) {
+
+        transform += `rotate(${rotation})`;
+
+      }
+      // Replace the transform attribute
+      updatedSvgContentData = updatedSvgContentData.replace(/transform="[^"]*"/, `transform="${transform}"`);
+
+      // Dispatch the updated SVG content
+      dispatch(updateSvgContent({ svgId, newContent: updatedSvgContentData }));
+    } else {
+      // Handle case where opening <svg> tag is not found
+      console.error("Opening <svg> tag not found in SVG content.");
+    }
+  };
