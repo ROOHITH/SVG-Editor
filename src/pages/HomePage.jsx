@@ -17,7 +17,7 @@ const HomePage = () => {
   const [selectedTool, setSelectedTool] = useState(null);
   const handleToolChange = (toolName) => {
     setSelectedTool(toolName);
-    alert(toolName)
+   // alert(toolName)
   };
   const getCursorForTool = (tool) => {
     switch (tool) {

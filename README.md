@@ -63,8 +63,9 @@ To run the SVG Editor web app locally, follow these steps:
 4. **Export SVG:** Download the edited SVG file or copy the SVG code to clipboard.
 5. **Undo/Redo:** Use the undo and redo buttons to revert or reapply editing actions.
 
-## Contributing
 
-Contributions are welcome! If you have any suggestions, feature requests, or bug reports, please open an issue or submit a pull request on GitHub.
+## Deployment
+The project is deployed on [Render.com](https://svg-editor.onrender.com/). You can visit the deployed site [here](https://svg-editor.onrender.com/).
+
 
 

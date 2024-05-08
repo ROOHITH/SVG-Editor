@@ -185,7 +185,7 @@ function SVGContent({ editorContent, setEditorContent, selectedTool, setSelected
       if (attributes.includes('transform')) {
         attributes = attributes.replace(/transform="[^"]*"/, `transform="${transform}"`);
       } else {
-        alert()
+       // alert()
         attributes += ` transform="${transform}"`;
       }
 

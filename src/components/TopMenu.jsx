@@ -17,7 +17,7 @@ const TopMenu = ({ setCurrentSvg, currentSvg, selectedSvg, setSelectedSvg }) => 
   const handleFileUpload = (event) => {
     console.log("File upload event triggered");
     const file = event.target.files[0];
-   alert()
+   //alert()
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {

@@ -13,7 +13,7 @@ function SaveButton({ currentSvg, selectedSvg, setSelectedSvg }) {
   // console.log(savedSvg);
 
   const downloadSvg = () => {
-    alert()
+  //  alert()
     setButtonClicked(true);
     if (currentSvg) {
       const savedSvg = svgs.find((svg) => svg.id === currentSvg);
